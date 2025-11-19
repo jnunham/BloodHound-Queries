@@ -1,0 +1,22 @@
+MATCH (g:Group)
+WHERE toLower(g.name) IN [
+  "domain admins@example.com",
+  "enterprise admins@example.com",
+  "schema admins@example.com",
+  "administrators@example.com",
+  "backup operators@example.com",
+  "account operators@example.com",
+  "server operators@example.com"
+]
+
+// Get direct or nested members
+MATCH (u:User)-[:MemberOf*1..]->(g)
+
+RETURN DISTINCT
+    u.name AS SAMAccountName,
+    u.domain AS Domain,
+    u.description AS Description,
+    u.pwdlastset AS PasswordLastSet,
+    u.pwdneverexpires AS PasswordNeverExpires,
+    g.name AS PrivilegedGroup
+ORDER BY PrivilegedGroup, SAMAccountName;
