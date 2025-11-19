@@ -9,8 +9,8 @@ WHERE toLower(g.name) IN [
   "server operators@example.com"
 ]
 
-// Get direct or nested members
-MATCH (u:User)-[:MemberOf*1..]->(g)
+// Direct membership only
+MATCH (u:User {enabled: true})-[:MemberOf]->(g)
 
 RETURN DISTINCT
     u.name AS SAMAccountName,
@@ -18,5 +18,5 @@ RETURN DISTINCT
     u.description AS Description,
     u.pwdlastset AS PasswordLastSet,
     u.pwdneverexpires AS PasswordNeverExpires,
-    g.name AS PrivilegedGroup
-ORDER BY PrivilegedGroup, SAMAccountName;
+    collect(DISTINCT g.name) AS PrivilegedGroups
+ORDER BY SAMAccountName;
